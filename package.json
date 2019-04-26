@@ -1,6 +1,6 @@
 {
   "name": "memoise",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Library for memoization/caching async functions",
   "main": "index.js",
   "scripts": {
