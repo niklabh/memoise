@@ -12,9 +12,24 @@
     "redis": "2.8.0",
     "sigmund": "1.0.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/niklabh/memoise"
+  },
+  "keywords": [
+    "caching",
+    "memoise",
+    "memoisation",
+    "async",
+    "performance",
+    "redis"
+  ],
   "author": "Nikhil Ranjan <niklabh811@gmail.com>",
   "license": "MIT",
   "public": true,
+  "bugs": {
+    "url": "https://github.com/niklabh/memoise/issues"
+  },
   "standard": {
     "globals": [
       "describe",
