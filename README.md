@@ -18,13 +18,13 @@ const memoiser = new Memoise({ max: 10000, maxAge: 300 })
 Then wrap your original async function like this
 
 ```
-const cached = memoiser.wrap(original);
+const cached = memoiser.wrap(original)
 ```
 
 Now call the wrapper as you would call the original function
 
 ```
-await cached(arg1, arg2,...argn);
+await cached(arg1, arg2,...argn)
 ```
 
 API
