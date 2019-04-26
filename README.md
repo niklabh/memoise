@@ -1,4 +1,4 @@
-memoise [![CircleCI](https://circleci.com/gh/niklabh/memoise.svg?style=svg)](https://circleci.com/gh/niklabh/memoise)
+memoise [![CircleCI](https://circleci.com/gh/niklabh/memoise.svg?style=svg)](https://circleci.com/gh/niklabh/memoise) ![GitHub](https://img.shields.io/github/license/niklabh/memoise.svg)
 =======
 
 memoise is a memoisation/caching module for node.js. Results are cached in redis or memory, via a backing store.
