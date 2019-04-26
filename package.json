@@ -1,7 +1,7 @@
 {
   "name": "memoise",
   "version": "0.0.1",
-  "description": "Library for memoization/caching for async functions",
+  "description": "Library for memoization/caching async functions",
   "main": "index.js",
   "scripts": {
     "test:unit": "mocha --bail test/index.js",
