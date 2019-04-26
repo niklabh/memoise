@@ -1,0 +1,110 @@
+'use strict'
+
+const { isNil, isString } = require('lodash')
+const redis = require('redis')
+const { ONE_HOUR } = require('./constant')
+
+// one client per service
+let redisClient
+
+const getClient = () => {
+  if (!isNil(redisClient)) {
+    return redisClient
+  }
+
+  const host = process.env.REDIS_HOST
+  const port = process.env.REDIS_PORT
+  const db = process.env.REDIS_DB
+
+  if (!isString(host)) {
+    console.error('(memoise) REDIS_HOST env variable not set')
+
+    return
+  }
+
+  if (!isString(port)) {
+    console.error('(memoise) REDIS_PORT env variable not set')
+
+    return
+  }
+
+  if (!isString(db)) {
+    console.error('(memoise) REDIS_DB env variable not set')
+
+    return
+  }
+
+  redisClient = redis.createClient({ host, port, db })
+
+  redisClient.on('error', (error) => {
+    console.error({ error }, 'redis error')
+  })
+
+  return redisClient
+}
+
+const getKey = (key) => `memo:${key}`
+
+const init = (options) => {
+  const maxAge = (options.maxAge) || ONE_HOUR
+  const ttl = parseInt(maxAge / 1000, 10)
+  const client = getClient()
+
+  if (isNil(client)) {
+    return
+  }
+
+  const store = {
+    get: (key) => new Promise((resolve, reject) => {
+      client.get(getKey(key), (err, data) => {
+        let result
+
+        if (!isNil(err)) {
+          return reject(err)
+        }
+
+        if (isNil(data)) {
+          return resolve(data)
+        }
+
+        data = data.toString()
+
+        try {
+          result = JSON.parse(data)
+        } catch (e) {
+          return reject(e)
+        }
+
+        return resolve(result)
+      })
+    }),
+
+    set: (key, val) => new Promise((resolve, reject) => {
+      key = getKey(key)
+
+      try {
+        const obj = JSON.stringify(val)
+
+        client.setex(key, ttl, obj, (err) => {
+          if (!isNil(err)) {
+            return reject(err)
+          }
+
+          return resolve(val)
+        })
+      } catch (err) {
+        return reject(err)
+      }
+    }),
+
+    expire: (key) => new Promise((resolve, reject) => {
+      client.expire(getKey(key), 0, resolve)
+    }),
+
+    reset: () => client.flushdb()
+  }
+
+  return store
+}
+
+module.exports = { init }
