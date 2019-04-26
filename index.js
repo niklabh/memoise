@@ -1,10 +1,9 @@
 'use strict'
 
-const path = require('path')
 const sigmund = require('sigmund')
 const { isNil } = require('lodash')
-const redis = require(path.resolve('./redis'))
-const lru = require(path.resolve('./lru'))
+const redis = require('./redis')
+const lru = require('./lru')
 
 const keygen = (name, args) => {
   const input = { f: name, a: args }
