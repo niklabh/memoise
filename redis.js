@@ -2,7 +2,7 @@
 
 const { isNil, isString } = require('lodash')
 const redis = require('redis')
-const { ONE_HOUR } = require('./constant')
+const { ONE_HOUR, PENDING, LISTEN_TTL } = require('./constant')
 
 // one client per service
 let redisClient
@@ -79,6 +79,28 @@ const init = (options) => {
       })
     }),
 
+    reserve: (key) => new Promise((resolve, reject) => {
+      key = getKey(key)
+
+      client.get(key, (err, val) => {
+        if (!isNil(err)) {
+          return reject(err)
+        }
+
+        if (val === PENDING) {
+          return resolve(false)
+        }
+
+        client.set(key, PENDING, (err) => {
+          if (!isNil(err)) {
+            return reject(err)
+          }
+
+          return resolve(true)
+        })
+      })
+    }),
+
     set: (key, val) => new Promise((resolve, reject) => {
       key = getKey(key)
 
@@ -95,6 +117,36 @@ const init = (options) => {
       } catch (err) {
         return reject(err)
       }
+    }),
+
+    listen: (key) => new Promise((resolve, reject) => {
+      const interval = setInterval(() => {
+        client.get(getKey(key), (err, data) => {
+          let result
+
+          if (!isNil(err)) {
+            return reject(err)
+          }
+
+          if (isNil(data)) {
+            clearInterval(interval)
+            return resolve(data)
+          }
+
+          data = data.toString()
+
+          if (data !== PENDING) {
+            try {
+              result = JSON.parse(data)
+            } catch (e) {
+              return reject(e)
+            }
+
+            clearInterval(interval)
+            return resolve(result)
+          }
+        })
+      }, LISTEN_TTL)
     }),
 
     expire: (key) => new Promise((resolve, reject) => {

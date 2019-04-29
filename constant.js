@@ -1,4 +1,6 @@
 const ONE_HOUR = 60 * 60 * 1000
 const TEN_THOUSAND = 10000
+const LISTEN_TTL = 100
+const PENDING = '__PENDING__'
 
-module.exports = { ONE_HOUR, TEN_THOUSAND }
+module.exports = { ONE_HOUR, TEN_THOUSAND, PENDING, LISTEN_TTL }

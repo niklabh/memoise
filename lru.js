@@ -1,7 +1,8 @@
 'use strict'
 
 const LRU = require('lru-cache')
-const { ONE_HOUR, TEN_THOUSAND } = require('./constant')
+const {isNil} = require('lodash')
+const { ONE_HOUR, LISTEN_TTL, PENDING, TEN_THOUSAND } = require('./constant')
 
 const init = (options) => {
   const lruOptions = {
@@ -15,7 +16,35 @@ const init = (options) => {
 
     set: (key, val) => lru.set(key, val),
 
+    reserve: (key) => {
+      const val = lru.get(key)
+
+      if (val === PENDING) {
+        return false
+      }
+
+      lru.set(key, PENDING)
+
+      return true
+    },
+
     expire: (key) => lru.del(key),
+
+    listen: (key) => new Promise((resolve, reject) => {
+      const interval = setInterval(() => {
+        const data = lru.get(key)
+
+        if (isNil(data)) {
+          clearInterval(interval)
+          return resolve(data)
+        }
+
+        if (data !== PENDING) {
+          clearInterval(interval)
+          return resolve(data)
+        }
+      }, LISTEN_TTL)
+    }),
 
     reset: () => lru.reset()
   }

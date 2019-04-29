@@ -83,18 +83,26 @@ class Memoise {
 
       stats.miss++
 
-      const result = await fn(...args)
+      const reserved = await this.store.reserve(key)
 
-      if (isNil(result)) {
-        return result
-      }
+      let result
 
-      try {
-        await this.store.set(key, result)
-      } catch (error) {
-        console.error(error)
+      if (reserved) {
+        result = await fn(...args)
 
-        stats.error++
+        if (isNil(result)) {
+          return result
+        }
+
+        try {
+          await this.store.set(key, result)
+        } catch (error) {
+          console.error(error)
+
+          stats.error++
+        }
+      } else {
+        result = await this.store.listen(key)
       }
 
       return result
