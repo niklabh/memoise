@@ -44,6 +44,7 @@ The arguments are used to create the key. Subsequently, when the wrapped functio
 
 The debug interface can be used to see stats and cache efficiency.
 
-### Thundering heard problem
+Thundering heard problem
+---
 
 The library solve [thundering heard problem](https://instagram-engineering.com/thundering-herds-promises-82191c8af57d) by leaveraging redis as cache.
