@@ -12,13 +12,13 @@ const getClient = (options) => {
     return redisClient
   }
 
-  const { host, port } = options
-
   if (isNil(options)) {
     console.error('(memoise) redis options not provided')
 
     return
   }
+
+  const { host, port } = options
 
   if (isNil(host)) {
     console.error('(memoise) REDIS_HOST env variable not set')

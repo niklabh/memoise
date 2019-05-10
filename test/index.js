@@ -25,7 +25,7 @@ describe('Unit Tests', () => {
   })
 
   it('should be able to wrap a async function', async () => {
-    const cache = new Memoise({store: 'lru', max: 10, maxAge: 60 * 1000})
+    const cache = new Memoise({max: 10, maxAge: 60 * 1000})
     const cachedAsyncFn = cache.wrap(asyncFn)
     let value = await cachedAsyncFn('arg1', 'arg2')
 
