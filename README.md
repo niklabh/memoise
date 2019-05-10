@@ -2,7 +2,7 @@ memoise [![CircleCI](https://circleci.com/gh/niklabh/memoise.svg?style=svg)](htt
 =======
 
 memoise is a memoisation/caching module for node.js. Results are cached in redis or memory, via a backing store.
-Redis is used if REDIS_HOST, REDIS_PORT and REDIS_DB environment variables are set otherwise it fallback to in memory
+Redis is used if redis host port is provided in options.redis otherwise it fallback to in memory
 lru store.
 
 Usage

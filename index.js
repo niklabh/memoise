@@ -111,6 +111,12 @@ class Memoise {
     return cachedFunc
   }
 
+  invalidate (...args) {
+    const key = keygen(this.fname, args)
+
+    return this.store.expire(key)
+  }
+
   debug () {
     return { fname: this.fname, stats: this.stats }
   }

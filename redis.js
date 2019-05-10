@@ -1,40 +1,38 @@
 'use strict'
 
-const { isNil, isString } = require('lodash')
+const { isNil } = require('lodash')
 const redis = require('redis')
 const { ONE_HOUR, PENDING, LISTEN_TTL } = require('./constant')
 
 // one client per service
 let redisClient
 
-const getClient = () => {
+const getClient = (options) => {
   if (!isNil(redisClient)) {
     return redisClient
   }
 
-  const host = process.env.REDIS_HOST
-  const port = process.env.REDIS_PORT
-  const db = process.env.REDIS_DB
+  const { host, port } = options
 
-  if (!isString(host)) {
+  if (isNil(options)) {
+    console.error('(memoise) redis options not provided')
+
+    return
+  }
+
+  if (isNil(host)) {
     console.error('(memoise) REDIS_HOST env variable not set')
 
     return
   }
 
-  if (!isString(port)) {
+  if (isNil(port)) {
     console.error('(memoise) REDIS_PORT env variable not set')
 
     return
   }
 
-  if (!isString(db)) {
-    console.error('(memoise) REDIS_DB env variable not set')
-
-    return
-  }
-
-  redisClient = redis.createClient({ host, port, db })
+  redisClient = redis.createClient({ host, port })
 
   redisClient.on('error', (error) => {
     console.error({ error }, 'redis error')
@@ -48,7 +46,7 @@ const getKey = (key) => `memo:${key}`
 const init = (options) => {
   const maxAge = (options.maxAge) || ONE_HOUR
   const ttl = parseInt(maxAge / 1000, 10)
-  const client = getClient()
+  const client = getClient(options.redis)
 
   if (isNil(client)) {
     return
